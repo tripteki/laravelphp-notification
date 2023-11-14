@@ -5,8 +5,11 @@ namespace App\Http\Controllers\Admin\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Http\JsonResponse;
+use Maatwebsite\Excel\Facades\Excel;
 use Tripteki\Notification\Contracts\Repository\Admin\INotificationRepository;
+use App\Exports\Notifications\NotificationExport;
 use App\Http\Requests\Admin\Notifications\NotificationShowValidation;
+use Tripteki\Helpers\Http\Requests\FileExportValidation;
 use Tripteki\Helpers\Http\Controllers\Controller;
 
 class NotificationAdminController extends Controller
@@ -107,5 +110,52 @@ class NotificationAdminController extends Controller
         $data = $this->notificationAdminRepository->get($notification);
 
         return iresponse($data, $statecode);
+    }
+
+    /**
+     * @OA\Get(
+     *      path="/admin/notifications-export",
+     *      tags={"Admin Notification"},
+     *      summary="Export",
+     *      @OA\Parameter(
+     *          required=false,
+     *          in="query",
+     *          name="file",
+     *          schema={"type": "string", "enum": {"csv", "xls", "xlsx"}},
+     *          description="Notification's File."
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Success."
+     *      ),
+     *      @OA\Response(
+     *          response=422,
+     *          description="Unprocessable Entity."
+     *      )
+     * )
+     *
+     * @param \Tripteki\Helpers\Http\Requests\FileExportValidation $request
+     * @return mixed
+     */
+    public function export(FileExportValidation $request)
+    {
+        $form = $request->validated();
+        $data = [];
+        $statecode = 200;
+
+        if ($form["file"] == "csv") {
+
+            $data = Excel::download(new NotificationExport(), "Notification.csv", \Maatwebsite\Excel\Excel::CSV);
+
+        } else if ($form["file"] == "xls") {
+
+            $data = Excel::download(new NotificationExport(), "Notification.xls", \Maatwebsite\Excel\Excel::XLS);
+
+        } else if ($form["file"] == "xlsx") {
+
+            $data = Excel::download(new NotificationExport(), "Notification.xlsx", \Maatwebsite\Excel\Excel::XLSX);
+        }
+
+        return $data;
     }
 };

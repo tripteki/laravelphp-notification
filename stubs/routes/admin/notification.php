@@ -9,4 +9,5 @@ Route::prefix(config("adminer.route.admin"))->middleware(config("adminer.middlew
      * Notifications.
      */
     Route::apiResource("notifications", NotificationAdminController::class)->only([ "index", "show", ])->parameters([ "notifications" => "notification", ]);
+    Route::get("notifications-export", [ NotificationAdminController::class, "export", ]);
 });
