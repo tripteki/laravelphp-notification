@@ -63,6 +63,13 @@ window.Socket = new Echo (
 });
 
 Socket.
+private ("auth.userid").
+notification (function (eventListener) {
+
+    // eventListener.type; //
+});
+
+Socket.
 private ("v1.modules.moduleid").
 listen ("*", function (eventListener)
 {
