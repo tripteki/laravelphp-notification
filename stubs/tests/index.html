@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title></title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.2/axios.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/laravel-echo/1.16.1/echo.iife.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pusher/8.3.0/pusher.min.js"></script>
+
+</head>
+
+<body>
+
+<script>
+
+const
+
+SOCKET_AUTH = "http://localhost:8000/api/broadcasting/auth",
+
+TOKEN = "";
+
+window.Socket = new Echo (
+{
+    broadcaster: "pusher",
+    key: "",
+    wsHost: "localhost",
+    wsPort: 6001,
+
+    cluster: "mt1",
+
+    forceTLS: false,
+
+    authorizer: function (channel)
+    {
+        return {
+
+            authorize: function (socketId, callback)
+            {
+                axios.post (SOCKET_AUTH,
+                {
+                    socket_id: socketId,
+                    channel_name: channel.name,
+                },
+                {
+                    headers:
+                    {
+                        "Authorization": `Bearer ${TOKEN}`,
+                    },
+
+                }).then (function (success) {
+
+                    callback (null, success.data);
+
+                }).catch (function (error) {
+
+                    callback (error);
+                });
+            },
+        };
+    },
+});
+
+Socket.
+private ("v1.modules.moduleid").
+listen ("*", function (eventListener)
+{
+    //
+});
+
+</script>
+
+</body>
+</html>
